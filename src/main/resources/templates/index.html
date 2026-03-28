@@ -315,31 +315,31 @@
         </div>
 
         <div class="bg-white rounded-3xl shadow-lg border border-amber-100 p-8">
-            <form class="grid gap-5">
+            <form action="/reserve" method="post" class="grid gap-5">
                 <div>
                     <label id="formLabelName" class="block text-sm font-semibold mb-2">飼い主さまのお名前</label>
-                    <input id="inputName" type="text" placeholder="お名前をご入力ください" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    <input id="inputName" name="ownerName" type="text" placeholder="お名前をご入力ください" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                 </div>
 
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div>
                         <label id="formLabelPhone" class="block text-sm font-semibold mb-2">お電話番号</label>
-                        <input id="inputPhone" type="text" placeholder="例：090-1234-5678" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <input id="inputPhone" name="phone" type="text" placeholder="例：090-1234-5678" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                     </div>
                     <div>
                         <label id="formLabelEmail" class="block text-sm font-semibold mb-2">メールアドレス</label>
-                        <input id="inputEmail" type="email" placeholder="example@mail.com" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <input id="inputEmail" name="email" type="email" placeholder="example@mail.com" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                     </div>
                 </div>
 
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div>
                         <label id="formLabelCatName" class="block text-sm font-semibold mb-2">猫ちゃんのお名前</label>
-                        <input id="inputCatName" type="text" placeholder="猫ちゃんのお名前" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <input id="inputCatName" name="catName" type="text" placeholder="猫ちゃんのお名前" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                     </div>
                     <div>
                         <label id="formLabelDays" class="block text-sm font-semibold mb-2">ご宿泊日数</label>
-                        <select id="selectDays" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <select id="selectDays" name="stayDays" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                             <option id="days1">1〜3日</option>
                             <option id="days2">4〜7日</option>
                             <option id="days3">8〜14日</option>
@@ -350,7 +350,7 @@
 
                 <div>
                     <label id="formLabelRoom" class="block text-sm font-semibold mb-2">ご希望のお部屋</label>
-                    <select id="selectRoom" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    <select id="selectRoom" name="roomType" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                         <option id="roomOption1">スタンダードルーム</option>
                         <option id="roomOption2">サンシャイン・ラグジュアリールーム</option>
                         <option id="roomOption3">ファミリー2匹ルーム</option>
@@ -359,7 +359,7 @@
 
                 <div>
                     <label id="formLabelNote" class="block text-sm font-semibold mb-2">備考・ご要望</label>
-                    <textarea id="inputNote" rows="4" placeholder="例：怖がり、投薬あり、特定のフードのみ、初対面が苦手 など" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400"></textarea>
+                    <textarea id="inputNote" name="note" rows="4" placeholder="例：怖がり、投薬あり、特定のフードのみ、初対面が苦手 など" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400"></textarea>
                 </div>
 
                 <button id="submitBtn" type="submit" class="rounded-2xl bg-slate-900 px-6 py-4 text-white font-semibold hover:bg-slate-800">
