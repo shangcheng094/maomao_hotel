@@ -1,4 +1,4 @@
-CREATE TABLE reservations (
+CREATE TABLE IF NOT EXISTS reservations (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     owner_name VARCHAR(100) NOT NULL,
     phone VARCHAR(30),
