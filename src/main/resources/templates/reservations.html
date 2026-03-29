@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予約一覧</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50 text-slate-800 min-h-screen">
+
+<header class="bg-white border-b border-amber-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900">予約一覧</h1>
+            <p class="text-sm text-slate-500">Cat Hotel 管理ページ</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/" class="rounded-full bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600">
+                トップへ戻る
+            </a>
+
+            <form th:action="@{/admin/logout}" method="post">
+                <button type="submit"
+                        class="rounded-full bg-slate-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                    ログアウト
+                </button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-6 py-10">
+    <div class="bg-white rounded-3xl shadow-sm border border-amber-100 overflow-hidden">
+        <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="text-xl font-bold">予約データ</h2>
+            <span class="text-sm text-slate-500" th:text="'件数：' + ${#lists.size(reservations)} + '件'">件数</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(reservations)}" class="p-10 text-center text-slate-500">
+            まだ予約データはありません。
+        </div>
+
+        <div th:if="${!#lists.isEmpty(reservations)}" class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-slate-50 text-slate-700">
+                <tr>
+                    <th class="px-4 py-3 text-left">ID</th>
+                    <th class="px-4 py-3 text-left">飼い主さま</th>
+                    <th class="px-4 py-3 text-left">電話番号</th>
+                    <th class="px-4 py-3 text-left">メール</th>
+                    <th class="px-4 py-3 text-left">猫ちゃん</th>
+                    <th class="px-4 py-3 text-left">宿泊日数</th>
+                    <th class="px-4 py-3 text-left">お部屋</th>
+                    <th class="px-4 py-3 text-left">備考</th>
+                    <th class="px-4 py-3 text-left">登録日時</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reservation : ${reservations}" class="border-t border-slate-100 align-top">
+                    <td class="px-4 py-3" th:text="${reservation.id}">1</td>
+                    <td class="px-4 py-3" th:text="${reservation.ownerName}">owner</td>
+                    <td class="px-4 py-3" th:text="${reservation.phone}">phone</td>
+                    <td class="px-4 py-3" th:text="${reservation.email}">email</td>
+                    <td class="px-4 py-3" th:text="${reservation.catName}">cat</td>
+                    <td class="px-4 py-3" th:text="${reservation.stayDays}">days</td>
+                    <td class="px-4 py-3" th:text="${reservation.roomType}">room</td>
+                    <td class="px-4 py-3 whitespace-pre-wrap break-words max-w-xs" th:text="${reservation.noteText}">note</td>
+                    <td class="px-4 py-3" th:text="${reservation.createdAt}">2026-03-29T11:00</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
