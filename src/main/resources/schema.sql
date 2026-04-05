@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS reservations (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    reservation_code VARCHAR(50) NOT NULL,
     owner_name VARCHAR(100) NOT NULL,
     phone VARCHAR(30),
     email VARCHAR(100),

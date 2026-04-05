@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 public class Reservation {
 
     private Long id;
+    private String reservationCode;
     private String ownerName;
     private String phone;
     private String email;
@@ -22,6 +23,14 @@ public class Reservation {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getReservationCode() {
+        return reservationCode;
+    }
+
+    public void setReservationCode(String reservationCode) {
+        this.reservationCode = reservationCode;
     }
 
     public String getOwnerName() {
