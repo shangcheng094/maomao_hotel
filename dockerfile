@@ -4,9 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-# 安装 maven
 RUN apt-get update && apt-get install -y maven
-
 RUN mvn clean package -DskipTests
 
 EXPOSE 10000
