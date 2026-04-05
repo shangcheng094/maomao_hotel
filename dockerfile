@@ -4,8 +4,10 @@ WORKDIR /app
 
 COPY . .
 
-RUN chmod +x mvnw
-RUN ./mvnw clean package -DskipTests
+# 安装 maven
+RUN apt-get update && apt-get install -y maven
+
+RUN mvn clean package -DskipTests
 
 EXPOSE 10000
 
