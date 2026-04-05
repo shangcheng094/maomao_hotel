@@ -23,8 +23,11 @@ public class ReservationForm {
     @Size(max = 100, message = "猫ちゃんのお名前は100文字以内で入力してください。")
     private String catName;
 
-    @NotBlank(message = "ご宿泊日数を選択してください。")
-    private String stayDays;
+    @NotBlank(message = "チェックイン日を選択してください。")
+    private String checkInDate;
+
+    @NotBlank(message = "チェックアウト日を選択してください。")
+    private String checkOutDate;
 
     @NotBlank(message = "ご希望のお部屋を選択してください。")
     private String roomType;
@@ -64,12 +67,20 @@ public class ReservationForm {
         this.catName = catName;
     }
 
-    public String getStayDays() {
-        return stayDays;
+    public String getCheckInDate() {
+        return checkInDate;
     }
 
-    public void setStayDays(String stayDays) {
-        this.stayDays = stayDays;
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
     }
 
     public String getRoomType() {

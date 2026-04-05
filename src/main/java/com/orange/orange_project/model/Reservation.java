@@ -1,5 +1,6 @@
 package com.orange.orange_project.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Reservation {
@@ -9,7 +10,8 @@ public class Reservation {
     private String phone;
     private String email;
     private String catName;
-    private String stayDays;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
     private String roomType;
     private String noteText;
     private LocalDateTime createdAt;
@@ -54,12 +56,20 @@ public class Reservation {
         this.catName = catName;
     }
 
-    public String getStayDays() {
-        return stayDays;
+    public LocalDate getCheckInDate() {
+        return checkInDate;
     }
 
-    public void setStayDays(String stayDays) {
-        this.stayDays = stayDays;
+    public void setCheckInDate(LocalDate checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
     }
 
     public String getRoomType() {
