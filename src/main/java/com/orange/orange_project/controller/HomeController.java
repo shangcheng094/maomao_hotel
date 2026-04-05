@@ -346,4 +346,94 @@ public class HomeController {
 
         return ResponseEntity.ok(result);
     }
+    @PostMapping("/admin/reservations/delete")
+    public String deleteReservationByAdmin(
+            @RequestParam Long id,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        Boolean adminLoggedIn = (Boolean) session.getAttribute("adminLoggedIn");
+        if (adminLoggedIn == null || !adminLoggedIn) {
+            return "redirect:/admin/login";
+        }
+
+        String sql = "DELETE FROM reservations WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+
+        redirectAttributes.addFlashAttribute("adminMessage", "予約を削除しました。");
+        return "redirect:/admin/reservations";
+    }
+    @PostMapping("/inquiry/delete")
+    public String deleteReservationByCustomer(
+            @RequestParam Long id,
+            @RequestParam String reservationCode,
+            @RequestParam String email,
+            @RequestParam String ownerName,
+            Model model
+    ) {
+        String verifySql = """
+                SELECT COUNT(*)
+                FROM reservations
+                WHERE reservation_code = ?
+                AND email = ?
+                AND owner_name = ?
+                """;
+
+        Integer matched = jdbcTemplate.queryForObject(
+                verifySql,
+                Integer.class,
+                reservationCode,
+                email,
+                ownerName
+        );
+
+        if (matched == null || matched == 0) {
+            model.addAttribute("inquiryError", "入力情報が一致しないため、予約を削除できませんでした。");
+            model.addAttribute("reservationCode", reservationCode);
+            model.addAttribute("email", email);
+            model.addAttribute("ownerName", ownerName);
+            return "inquiry";
+        }
+
+        String deleteSql = """
+                DELETE FROM reservations
+                WHERE id = ?
+                AND email = ?
+                """;
+
+        jdbcTemplate.update(deleteSql, id, email);
+
+        String sql = """
+                SELECT id, reservation_code, owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text, created_at
+                FROM reservations
+                WHERE email = ?
+                ORDER BY created_at DESC
+                """;
+
+        List<Reservation> reservations = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Reservation reservation = new Reservation();
+            reservation.setId(rs.getLong("id"));
+            reservation.setReservationCode(rs.getString("reservation_code"));
+            reservation.setOwnerName(rs.getString("owner_name"));
+            reservation.setPhone(rs.getString("phone"));
+            reservation.setEmail(rs.getString("email"));
+            reservation.setCatName(rs.getString("cat_name"));
+            reservation.setCheckInDate(rs.getDate("check_in_date").toLocalDate());
+            reservation.setCheckOutDate(rs.getDate("check_out_date").toLocalDate());
+            reservation.setRoomType(rs.getString("room_type"));
+            reservation.setNoteText(rs.getString("note_text"));
+            if (rs.getTimestamp("created_at") != null) {
+                reservation.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            }
+            return reservation;
+        }, email);
+
+        model.addAttribute("inquirySuccess", "予約を取り消しました。");
+        model.addAttribute("searchedReservationCode", reservationCode);
+        model.addAttribute("searchedEmail", email);
+        model.addAttribute("searchedOwnerName", ownerName);
+        model.addAttribute("reservations", reservations);
+
+        return "inquiry-result";
+    }
 }
