@@ -9,19 +9,21 @@
 <body class="bg-amber-50 text-slate-800 min-h-screen">
 
 <header class="bg-white border-b border-amber-100 shadow-sm">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div>
+    <div class="max-w-[1700px] mx-auto px-6 py-6 flex items-center justify-between">
+        <div class="shrink-0">
             <h1 class="text-2xl font-bold text-slate-900">予約一覧</h1>
-            <p class="text-sm text-slate-500">Cat Hotel 管理ページ</p>
+            <p class="text-sm text-slate-500 mt-1">Cat Hotel 管理ページ</p>
         </div>
-        <div class="flex items-center gap-3">
-            <a href="/" class="rounded-full bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600">
+
+        <div class="flex items-center gap-3 shrink-0">
+            <a href="/"
+               class="inline-flex items-center rounded-full bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 whitespace-nowrap">
                 トップへ戻る
             </a>
 
-            <form th:action="@{/admin/logout}" method="post">
+            <form th:action="@{/admin/logout}" method="post" class="m-0">
                 <button type="submit"
-                        class="rounded-full bg-slate-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                        class="inline-flex items-center rounded-full bg-slate-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 whitespace-nowrap">
                     ログアウト
                 </button>
             </form>
@@ -29,7 +31,7 @@
     </div>
 </header>
 
-<main class="max-w-[2000px] mx-auto px-6 py-10">
+<main class="max-w-[1700px] mx-auto px-6 py-10">
     <div th:if="${adminMessage}" class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
         <p th:text="${adminMessage}"></p>
     </div>
