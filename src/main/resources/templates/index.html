@@ -363,13 +363,14 @@
                     
                     <div>
                         <label id="formLabelRoom" class="block text-sm font-semibold text-slate-700 mb-2">ご希望のお部屋</label>
-                        <select id="selectRoom" th:field="*{roomType}"
-                                class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                            <option id="roomOptionEmpty" value="">選択してください</option>
+                        <select id="selectRoom" th:field="*{roomType}" disabled
+                                class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:bg-slate-100 disabled:text-slate-400">
+                            <option id="roomOptionEmpty" value="">先に日付を選択してください</option>
                             <option id="roomOption1" value="スタンダードルーム">スタンダードルーム</option>
                             <option id="roomOption2" value="サンシャイン・ラグジュアリールーム">サンシャイン・ラグジュアリールーム</option>
                             <option id="roomOption3" value="ファミリー2匹ルーム">ファミリー2匹ルーム</option>
                         </select>
+                        <p id="roomHelpText" class="mt-2 text-sm text-slate-500">チェックイン日とチェックアウト日を選択すると、空いているお部屋が表示されます。</p>
                         <p th:if="${#fields.hasErrors('roomType')}" th:errors="*{roomType}" class="mt-2 text-sm text-red-600"></p>
                     </div>
 
@@ -806,6 +807,108 @@
     }
 
     applyLanguage('ja');
+
+    async function loadAvailableRooms() {
+        const checkInInput = document.getElementById('inputCheckInDate');
+        const checkOutInput = document.getElementById('inputCheckOutDate');
+        const roomSelect = document.getElementById('selectRoom');
+        const roomHelpText = document.getElementById('roomHelpText');
+
+        if (!checkInInput || !checkOutInput || !roomSelect) return;
+
+        const checkInDate = checkInInput.value;
+        const checkOutDate = checkOutInput.value;
+
+        roomSelect.innerHTML = '';
+
+        if (!checkInDate || !checkOutDate) {
+            roomSelect.disabled = true;
+            roomSelect.innerHTML = '<option value="">先に日付を選択してください</option>';
+            if (roomHelpText) {
+                roomHelpText.textContent = currentLang === 'ja'
+                    ? 'チェックイン日とチェックアウト日を選択すると、空いているお部屋が表示されます。'
+                    : '请先选择入住和退房日期，系统会显示有空房的房型。';
+            }
+            return;
+        }
+
+        if (checkInDate >= checkOutDate) {
+            roomSelect.disabled = true;
+            roomSelect.innerHTML = '<option value="">日付を確認してください</option>';
+            if (roomHelpText) {
+                roomHelpText.textContent = currentLang === 'ja'
+                    ? 'チェックアウト日はチェックイン日より後の日付を選択してください。'
+                    : '退房日期必须晚于入住日期。';
+            }
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/available-rooms?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`);
+            const data = await response.json();
+
+            if (!Array.isArray(data) || data.length === 0) {
+                roomSelect.disabled = true;
+                roomSelect.innerHTML = `<option value="">${currentLang === 'ja' ? '空室がありません' : '没有空房'}</option>`;
+                if (roomHelpText) {
+                    roomHelpText.textContent = currentLang === 'ja'
+                        ? 'この日程では空いているお部屋がありません。'
+                        : '这个日期范围内没有可预约房型。';
+                }
+                return;
+            }
+
+            roomSelect.disabled = false;
+
+            const firstOption = document.createElement('option');
+            firstOption.value = '';
+            firstOption.textContent = currentLang === 'ja' ? '選択してください' : '请选择';
+            roomSelect.appendChild(firstOption);
+
+            data.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room.roomType;
+                option.textContent = currentLang === 'ja'
+                    ? `${room.roomType}（残り${room.remaining}室）`
+                    : `${translateRoomTypeToZh(room.roomType)}（剩余${room.remaining}间）`;
+                roomSelect.appendChild(option);
+            });
+
+            if (roomHelpText) {
+                roomHelpText.textContent = currentLang === 'ja'
+                    ? '空いているお部屋のみ表示しています。'
+                    : '当前仅显示有空房的房型。';
+            }
+        } catch (error) {
+            roomSelect.disabled = true;
+            roomSelect.innerHTML = `<option value="">${currentLang === 'ja' ? '取得失敗' : '加载失败'}</option>`;
+            if (roomHelpText) {
+                roomHelpText.textContent = currentLang === 'ja'
+                    ? '空室情報の取得に失敗しました。'
+                    : '获取空房信息失败。';
+            }
+        }
+    }
+
+    function translateRoomTypeToZh(roomType) {
+        if (roomType === 'スタンダードルーム') return '标准舒适房';
+        if (roomType === 'サンシャイン・ラグジュアリールーム') return '阳光豪华房';
+        if (roomType === 'ファミリー2匹ルーム') return '家庭双猫房';
+        return roomType;
+    }
+
+    const checkInInput = document.getElementById('inputCheckInDate');
+    const checkOutInput = document.getElementById('inputCheckOutDate');
+
+    if (checkInInput) {
+        checkInInput.addEventListener('change', loadAvailableRooms);
+    }
+    if (checkOutInput) {
+        checkOutInput.addEventListener('change', loadAvailableRooms);
+    }
+
+    loadAvailableRooms();
+
 </script>
 
 </body>
