@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +27,6 @@
 </head>
 <body class="bg-amber-50 text-slate-800">
 
-<!-- Header -->
 <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-amber-100 shadow-sm">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <a href="#" class="flex items-center gap-3">
@@ -71,7 +70,6 @@
     </div>
 </header>
 
-<!-- Hero -->
 <section class="hero-bg min-h-[88vh] flex items-center">
     <div class="max-w-7xl mx-auto px-6 py-20 w-full">
         <div class="max-w-2xl text-white">
@@ -120,7 +118,6 @@
     </div>
 </section>
 
-<!-- About -->
 <section id="about" class="py-20">
     <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
         <div>
@@ -164,7 +161,6 @@
     </div>
 </section>
 
-<!-- Rooms -->
 <section id="rooms" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center max-w-2xl mx-auto">
@@ -237,7 +233,6 @@
     </div>
 </section>
 
-<!-- Gallery -->
 <section id="gallery" class="py-20">
     <div class="max-w-7xl mx-auto px-6">
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
@@ -259,7 +254,6 @@
     </div>
 </section>
 
-<!-- Services -->
 <section id="services" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center max-w-2xl mx-auto">
@@ -292,7 +286,6 @@
     </div>
 </section>
 
-<!-- Booking Form -->
 <section id="booking" class="py-20">
     <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-10 items-start">
         <div>
@@ -323,59 +316,76 @@
                 <div th:if="${saveError}" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
                     <p th:text="${saveError}"></p>
                 </div>
+
                 <div>
                     <label id="formLabelName" class="block text-sm font-semibold mb-2">飼い主さまのお名前</label>
-                    <input id="inputName" th:field="*{ownerName}" type="text" placeholder="お名前をご入力ください" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    <input id="inputName" th:field="*{ownerName}" type="text"
+                           placeholder="お名前をご入力ください"
+                           class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                     <p th:if="${#fields.hasErrors('ownerName')}" th:errors="*{ownerName}" class="mt-2 text-sm text-red-600"></p>
                 </div>
 
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div>
                         <label id="formLabelPhone" class="block text-sm font-semibold mb-2">お電話番号</label>
-                        <input id="inputPhone" th:field="*{phone}" type="text" placeholder="例：090-1234-5678" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <input id="inputPhone" th:field="*{phone}" type="text"
+                               placeholder="例：090-1234-5678"
+                               class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                         <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="mt-2 text-sm text-red-600"></p>
                     </div>
                     <div>
                         <label id="formLabelEmail" class="block text-sm font-semibold mb-2">メールアドレス</label>
-                        <input id="inputEmail" th:field="*{email}" type="email" placeholder="example@mail.com" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <input id="inputEmail" th:field="*{email}" type="email"
+                               placeholder="example@mail.com"
+                               class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                         <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="mt-2 text-sm text-red-600"></p>
                     </div>
                 </div>
 
-                <div class="grid sm:grid-cols-2 gap-5">
+                <div class="grid md:grid-cols-2 gap-5">
+
                     <div>
-                        <label id="formLabelCatName" class="block text-sm font-semibold mb-2">猫ちゃんのお名前</label>
-                        <input id="inputCatName" th:field="*{catName}" type="text" placeholder="猫ちゃんのお名前" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                        <p th:if="${#fields.hasErrors('catName')}" th:errors="*{catName}" class="mt-2 text-sm text-red-600"></p>
+                        <label id="formLabelCheckInDate" class="block text-sm font-semibold text-slate-700 mb-2">チェックイン日</label>
+                        <input id="inputCheckInDate" th:field="*{checkInDate}" type="date"
+                               class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <p th:if="${#fields.hasErrors('checkInDate')}" th:errors="*{checkInDate}" class="mt-2 text-sm text-red-600"></p>
                     </div>
+
                     <div>
-                        <label id="formLabelDays" class="block text-sm font-semibold mb-2">ご宿泊日数</label>
-                        <select id="selectDays" th:field="*{stayDays}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                            <option value="">選択してください</option>
-                            <option value="1〜3日">1〜3日</option>
-                            <option value="4〜7日">4〜7日</option>
-                            <option value="8〜14日">8〜14日</option>
-                            <option value="15日以上">15日以上</option>
-                        </select>
-                        <p th:if="${#fields.hasErrors('stayDays')}" th:errors="*{stayDays}" class="mt-2 text-sm text-red-600"></p>
+                        <label id="formLabelCheckOutDate" class="block text-sm font-semibold text-slate-700 mb-2">チェックアウト日</label>
+                        <input id="inputCheckOutDate" th:field="*{checkOutDate}" type="date"
+                               class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <p th:if="${#fields.hasErrors('checkOutDate')}" th:errors="*{checkOutDate}" class="mt-2 text-sm text-red-600"></p>
                     </div>
                 </div>
 
-                <div>
-                    <label id="formLabelRoom" class="block text-sm font-semibold mb-2">ご希望のお部屋</label>
-                    <select id="selectRoom" th:field="*{roomType}"
-                            class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                        <option value="">選択してください</option>
-                        <option value="スタンダードルーム">スタンダードルーム</option>
-                        <option value="サンシャイン・ラグジュアリールーム">サンシャイン・ラグジュアリールーム</option>
-                        <option value="ファミリー2匹ルーム">ファミリー2匹ルーム</option>
-                    </select>
-                    <p th:if="${#fields.hasErrors('roomType')}" th:errors="*{roomType}" class="mt-2 text-sm text-red-600"></p>
+                <div class="grid md:grid-cols-2 gap-5">
+                    
+                    <div>
+                        <label id="formLabelRoom" class="block text-sm font-semibold text-slate-700 mb-2">ご希望のお部屋</label>
+                        <select id="selectRoom" th:field="*{roomType}"
+                                class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            <option id="roomOptionEmpty" value="">選択してください</option>
+                            <option id="roomOption1" value="スタンダードルーム">スタンダードルーム</option>
+                            <option id="roomOption2" value="サンシャイン・ラグジュアリールーム">サンシャイン・ラグジュアリールーム</option>
+                            <option id="roomOption3" value="ファミリー2匹ルーム">ファミリー2匹ルーム</option>
+                        </select>
+                        <p th:if="${#fields.hasErrors('roomType')}" th:errors="*{roomType}" class="mt-2 text-sm text-red-600"></p>
+                    </div>
+
+                    <div>
+                        <label id="formLabelCatName" class="block text-sm font-semibold text-slate-700 mb-2">猫ちゃんのお名前</label>
+                        <input id="inputCatName" th:field="*{catName}" type="text"
+                               class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <p th:if="${#fields.hasErrors('catName')}" th:errors="*{catName}" class="mt-2 text-sm text-red-600"></p>
+                    </div>
                 </div>
 
                 <div>
                     <label id="formLabelNote" class="block text-sm font-semibold mb-2">備考・ご要望</label>
-                    <textarea id="inputNote" th:field="*{note}" rows="4" placeholder="例：怖がり、投薬あり、特定のフードのみ、初対面が苦手 など" class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400"></textarea>
+                    <textarea id="inputNote" th:field="*{note}" rows="4"
+                              placeholder="例：怖がり、投薬あり、特定のフードのみ、初対面が苦手 など"
+                              class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400"></textarea>
                     <p th:if="${#fields.hasErrors('note')}" th:errors="*{note}" class="mt-2 text-sm text-red-600"></p>
                 </div>
 
@@ -387,7 +397,6 @@
     </div>
 </section>
 
-<!-- FAQ -->
 <section id="faq" class="py-20 bg-white">
     <div class="max-w-5xl mx-auto px-6">
         <div class="text-center">
@@ -418,7 +427,6 @@
     </div>
 </section>
 
-<!-- Footer -->
 <footer class="bg-slate-950 text-slate-300 pt-16 pb-10">
     <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10">
         <div>
@@ -489,6 +497,7 @@
             navFaq: 'よくある質問',
             headerBookingBtn: '今すぐ予約',
             headerBookingBtnDesktop: '今すぐ予約',
+
             heroBadge: '24時間見守り・個室完備・毎日お世話',
             heroTitle: '大切な猫ちゃんに、<br>おうちのような安心できる休日を',
             heroDesc: '猫ちゃんホテルでは、出張・旅行・お引っ越し・短期預かりの際にも安心してお任せいただける、静かで清潔、安全な滞在空間をご用意しています。すべての猫ちゃんに個別スペース、毎日の健康チェック、ふれあいタイム、写真レポートをご提供し、離れていても安心して見守れる環境を整えています。',
@@ -561,25 +570,18 @@
             notice4: '• 緊張しやすい子は、いつもの毛布やおもちゃがあると安心です',
 
             formLabelName: '飼い主さまのお名前',
-            inputNamePlaceholder: 'お名前をご入力ください',
             formLabelPhone: 'お電話番号',
-            inputPhonePlaceholder: '例：090-1234-5678',
             formLabelEmail: 'メールアドレス',
-            inputEmailPlaceholder: 'example@mail.com',
             formLabelCatName: '猫ちゃんのお名前',
-            inputCatNamePlaceholder: '猫ちゃんのお名前',
-            formLabelDays: 'ご宿泊日数',
-            days1: '1〜3日',
-            days2: '4〜7日',
-            days3: '8〜14日',
-            days4: '15日以上',
+            formLabelCheckInDate: 'チェックイン日',
+            formLabelCheckOutDate: 'チェックアウト日',
             formLabelRoom: 'ご希望のお部屋',
+            formLabelNote: '備考・ご要望',
+
+            roomOptionEmpty: '選択してください',
             roomOption1: 'スタンダードルーム',
             roomOption2: 'サンシャイン・ラグジュアリールーム',
             roomOption3: 'ファミリー2匹ルーム',
-            formLabelNote: '備考・ご要望',
-            inputNotePlaceholder: '例：怖がり、投薬あり、特定のフードのみ、初対面が苦手 など',
-            submitBtn: '予約内容を送信する',
 
             faqLabel: 'よくある質問',
             faqTitle: '初めてのご利用前によくいただくご質問',
@@ -606,6 +608,12 @@
             footerSnsDesc: 'ご宿泊中の猫ちゃんの様子や、ホテルの日常、ちょっとした豆知識などを発信しています。',
             footerCopyright: '© 2026 猫ちゃんホテル Cat Hotel. All Rights Reserved.',
             footerLastLine: '大切な小さなお客さまを、心を込めてお迎えします。',
+
+            inputNamePlaceholder: 'お名前をご入力ください',
+            inputPhonePlaceholder: '例：090-1234-5678',
+            inputEmailPlaceholder: 'example@mail.com',
+            inputNotePlaceholder: '例：怖がり、投薬あり、特定のフードのみ、初対面が苦手 など',
+            submitBtn: '予約内容を送信する',
             toggleText: '中文'
         },
         zh: {
@@ -619,6 +627,7 @@
             navFaq: '常见问题',
             headerBookingBtn: '立即预约',
             headerBookingBtnDesktop: '立即预约',
+
             heroBadge: '24小时照护 · 独立猫房 · 每日陪玩',
             heroTitle: '给主子一个<br>像家一样安心的假期',
             heroDesc: '猫猫酒店为出差、旅行、搬家和短期托管提供安静、安全、洁净的入住环境。每只猫咪拥有独立空间、每日健康观察、互动陪伴和照片回传，让你不在身边，也能放心托付。',
@@ -691,25 +700,18 @@
             notice4: '• 胆小猫建议自带熟悉的小毯子或玩具',
 
             formLabelName: '家长姓名',
-            inputNamePlaceholder: '请输入你的姓名',
             formLabelPhone: '联系电话',
-            inputPhonePlaceholder: '例如 090-1234-5678',
             formLabelEmail: '邮箱',
-            inputEmailPlaceholder: 'example@mail.com',
             formLabelCatName: '猫咪名字',
-            inputCatNamePlaceholder: '主子叫什么名字',
-            formLabelDays: '入住天数',
-            days1: '1-3天',
-            days2: '4-7天',
-            days3: '8-14天',
-            days4: '15天以上',
+            formLabelCheckInDate: '入住日期',
+            formLabelCheckOutDate: '退房日期',
             formLabelRoom: '想预约的房型',
+            formLabelNote: '备注需求',
+
+            roomOptionEmpty: '请选择',
             roomOption1: '标准舒适房',
             roomOption2: '阳光豪华房',
             roomOption3: '家庭双猫房',
-            formLabelNote: '备注需求',
-            inputNotePlaceholder: '例如：胆小、需要喂药、只吃某品牌主粮、不喜欢陌生人等',
-            submitBtn: '提交预约信息',
 
             faqLabel: '常见问题',
             faqTitle: '第一次寄养前，大家最常问这些',
@@ -736,13 +738,27 @@
             footerSnsDesc: '关注猫猫酒店的日常，查看住客照片、护理笔记和入住小贴士。',
             footerCopyright: '© 2026 猫猫酒店 Cat Hotel. All Rights Reserved.',
             footerLastLine: '用心照顾每一位毛茸茸的小住客。',
+
+            inputNamePlaceholder: '请输入你的姓名',
+            inputPhonePlaceholder: '例如 090-1234-5678',
+            inputEmailPlaceholder: 'example@mail.com',
+            inputNotePlaceholder: '例如：胆小、需要喂药、只吃某品牌主粮、不喜欢陌生人等',
+            submitBtn: '提交预约信息',
             toggleText: '日本語'
         }
     };
 
-    const htmlIds = [
-        'heroTitle', 'aboutTitle'
-    ];
+    const htmlIds = ['heroTitle', 'aboutTitle'];
+
+    function setText(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (htmlIds.includes(id)) {
+            el.innerHTML = value;
+        } else {
+            el.textContent = value;
+        }
+    }
 
     function applyLanguage(lang) {
         currentLang = lang;
@@ -752,33 +768,42 @@
         document.title = t.title;
 
         for (const key in t) {
-            if (key === 'title' || key === 'toggleText') continue;
-            const el = document.getElementById(key);
-            if (!el) continue;
-
-            if (htmlIds.includes(key)) {
-                el.innerHTML = t[key];
-            } else {
-                el.textContent = t[key];
-            }
+            if (
+                key === 'title' ||
+                key === 'toggleText' ||
+                key.endsWith('Placeholder')
+            ) continue;
+            setText(key, t[key]);
         }
 
-        document.getElementById('inputName').placeholder = t.inputNamePlaceholder;
-        document.getElementById('inputPhone').placeholder = t.inputPhonePlaceholder;
-        document.getElementById('inputEmail').placeholder = t.inputEmailPlaceholder;
-        document.getElementById('inputCatName').placeholder = t.inputCatNamePlaceholder;
-        document.getElementById('inputNote').placeholder = t.inputNotePlaceholder;
+        const inputName = document.getElementById('inputName');
+        const inputPhone = document.getElementById('inputPhone');
+        const inputEmail = document.getElementById('inputEmail');
+        const inputNote = document.getElementById('inputNote');
+        const langToggle = document.getElementById('langToggle');
+        const langToggleMobile = document.getElementById('langToggleMobile');
 
-        document.getElementById('langToggle').textContent = t.toggleText;
-        document.getElementById('langToggleMobile').textContent = t.toggleText;
+        if (inputName) inputName.placeholder = t.inputNamePlaceholder;
+        if (inputPhone) inputPhone.placeholder = t.inputPhonePlaceholder;
+        if (inputEmail) inputEmail.placeholder = t.inputEmailPlaceholder;
+        if (inputNote) inputNote.placeholder = t.inputNotePlaceholder;
+        if (langToggle) langToggle.textContent = t.toggleText;
+        if (langToggleMobile) langToggleMobile.textContent = t.toggleText;
     }
 
     function toggleLanguage() {
         applyLanguage(currentLang === 'ja' ? 'zh' : 'ja');
     }
 
-    document.getElementById('langToggle').addEventListener('click', toggleLanguage);
-    document.getElementById('langToggleMobile').addEventListener('click', toggleLanguage);
+    const langToggle = document.getElementById('langToggle');
+    const langToggleMobile = document.getElementById('langToggleMobile');
+
+    if (langToggle) {
+        langToggle.addEventListener('click', toggleLanguage);
+    }
+    if (langToggleMobile) {
+        langToggleMobile.addEventListener('click', toggleLanguage);
+    }
 
     applyLanguage('ja');
 </script>

@@ -49,7 +49,8 @@
                     <th class="px-4 py-3 text-left">電話番号</th>
                     <th class="px-4 py-3 text-left">メール</th>
                     <th class="px-4 py-3 text-left">猫ちゃん</th>
-                    <th class="px-4 py-3 text-left">宿泊日数</th>
+                    <th class="px-4 py-3 text-left">チェックイン</th>
+                    <th class="px-4 py-3 text-left">チェックアウト</th>
                     <th class="px-4 py-3 text-left">お部屋</th>
                     <th class="px-4 py-3 text-left">備考</th>
                     <th class="px-4 py-3 text-left">登録日時</th>
@@ -62,7 +63,8 @@
                     <td class="px-4 py-3" th:text="${reservation.phone}">phone</td>
                     <td class="px-4 py-3" th:text="${reservation.email}">email</td>
                     <td class="px-4 py-3" th:text="${reservation.catName}">cat</td>
-                    <td class="px-4 py-3" th:text="${reservation.stayDays}">days</td>
+                    <td class="px-4 py-3" th:text="${reservation.checkInDate}">2026-04-01</td>
+                    <td class="px-4 py-3" th:text="${reservation.checkOutDate}">2026-04-15</td>
                     <td class="px-4 py-3" th:text="${reservation.roomType}">room</td>
                     <td class="px-4 py-3 whitespace-pre-wrap break-words max-w-xs" th:text="${reservation.noteText}">note</td>
                     <td class="px-4 py-3" th:text="${reservation.createdAt}">2026-03-29T11:00</td>

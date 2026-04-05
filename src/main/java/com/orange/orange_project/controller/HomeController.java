@@ -37,6 +37,15 @@ public class HomeController {
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes
     ) {
+        if (reservationForm.getCheckInDate() != null
+        && reservationForm.getCheckOutDate() != null
+        && !reservationForm.getCheckInDate().isBlank()
+        && !reservationForm.getCheckOutDate().isBlank()
+        && reservationForm.getCheckInDate().compareTo(reservationForm.getCheckOutDate()) >= 0) {
+
+            bindingResult.rejectValue("checkOutDate", "invalid", "チェックアウト日はチェックイン日より後の日付を選択してください。");
+        }
+
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("saveError", "入力内容をご確認ください。");
             redirectAttributes.addFlashAttribute("reservationForm", reservationForm);
@@ -49,21 +58,22 @@ public class HomeController {
 
         String sql = """
                 INSERT INTO reservations
-                (owner_name, phone, email, cat_name, stay_days, room_type, note_text)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try {
-            jdbcTemplate.update(
+                jdbcTemplate.update(
                     sql,
                     reservationForm.getOwnerName(),
                     reservationForm.getPhone(),
                     reservationForm.getEmail(),
                     reservationForm.getCatName(),
-                    reservationForm.getStayDays(),
+                    reservationForm.getCheckInDate(),
+                    reservationForm.getCheckOutDate(),
                     reservationForm.getRoomType(),
                     reservationForm.getNote()
-            );
+                );
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("saveError", "予約の保存に失敗しました。時間をおいて再度お試しください。");
             redirectAttributes.addFlashAttribute("reservationForm", reservationForm);
@@ -81,7 +91,7 @@ public class HomeController {
         }
 
         String sql = """
-                SELECT id, owner_name, phone, email, cat_name, stay_days, room_type, note_text, created_at
+                SELECT id, owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text, created_at
                 FROM reservations
                 ORDER BY id DESC
                 """;
@@ -93,7 +103,8 @@ public class HomeController {
             reservation.setPhone(rs.getString("phone"));
             reservation.setEmail(rs.getString("email"));
             reservation.setCatName(rs.getString("cat_name"));
-            reservation.setStayDays(rs.getString("stay_days"));
+            reservation.setCheckInDate(rs.getDate("check_in_date").toLocalDate());
+            reservation.setCheckOutDate(rs.getDate("check_out_date").toLocalDate());
             reservation.setRoomType(rs.getString("room_type"));
             reservation.setNoteText(rs.getString("note_text"));
             if (rs.getTimestamp("created_at") != null) {
