@@ -45,6 +45,7 @@
                 <thead class="bg-slate-50 text-slate-700">
                 <tr>
                     <th class="px-4 py-3 text-left">ID</th>
+                    <th class="px-4 py-3 text-left">予約番号</th>
                     <th class="px-4 py-3 text-left">飼い主さま</th>
                     <th class="px-4 py-3 text-left">電話番号</th>
                     <th class="px-4 py-3 text-left">メール</th>
@@ -59,6 +60,7 @@
                 <tbody>
                 <tr th:each="reservation : ${reservations}" class="border-t border-slate-100 align-top">
                     <td class="px-4 py-3" th:text="${reservation.id}">1</td>
+                    <td class="px-4 py-3" th:text="${reservation.reservationCode}">RES-123</td>
                     <td class="px-4 py-3" th:text="${reservation.ownerName}">owner</td>
                     <td class="px-4 py-3" th:text="${reservation.phone}">phone</td>
                     <td class="px-4 py-3" th:text="${reservation.email}">email</td>

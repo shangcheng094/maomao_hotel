@@ -1,22 +1,23 @@
 package com.orange.orange_project.controller;
 
+import com.orange.orange_project.model.AdminLoginForm;
+import com.orange.orange_project.model.Reservation;
 import com.orange.orange_project.model.ReservationForm;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.orange.orange_project.model.Reservation;
-import java.util.List;
-import com.orange.orange_project.model.AdminLoginForm;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -25,62 +26,13 @@ public class HomeController {
     private final JdbcTemplate jdbcTemplate;
 
     private static final Map<String, Integer> ROOM_CAPACITY = Map.of(
-        "スタンダードルーム", 3,
-        "サンシャイン・ラグジュアリールーム", 3,
-        "ファミリー2匹ルーム", 3
+            "スタンダードルーム", 3,
+            "サンシャイン・ラグジュアリールーム", 3,
+            "ファミリー2匹ルーム", 3
     );
 
     public HomeController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @GetMapping("/api/available-rooms")
-    public ResponseEntity<?> getAvailableRooms(
-            @RequestParam String checkInDate,
-            @RequestParam String checkOutDate
-    ) {
-        if (checkInDate == null || checkInDate.isBlank()
-                || checkOutDate == null || checkOutDate.isBlank()) {
-            return ResponseEntity.badRequest().body("チェックイン日とチェックアウト日を入力してください。");
-        }
-
-        if (checkInDate.compareTo(checkOutDate) >= 0) {
-            return ResponseEntity.badRequest().body("チェックアウト日はチェックイン日より後の日付を選択してください。");
-        }
-
-        String sql = """
-                SELECT room_type, COUNT(*) AS reserved_count
-                FROM reservations
-                WHERE check_in_date < ?
-                AND check_out_date > ?
-                GROUP BY room_type
-                """;
-
-        Map<String, Integer> reservedCountMap = new HashMap<>();
-        jdbcTemplate.query(sql, rs -> {
-            reservedCountMap.put(
-                    rs.getString("room_type"),
-                    rs.getInt("reserved_count")
-            );
-        }, checkOutDate, checkInDate);
-
-        ArrayList<Map<String, Object>> result = new ArrayList<>();
-
-        for (Map.Entry<String, Integer> entry : ROOM_CAPACITY.entrySet()) {
-            String roomType = entry.getKey();
-            int capacity = entry.getValue();
-            int reserved = reservedCountMap.getOrDefault(roomType, 0);
-            int remaining = capacity - reserved;
-
-            if (remaining > 0) {
-                Map<String, Object> room = new HashMap<>();
-                room.put("roomType", roomType);
-                room.put("remaining", remaining);
-                result.add(room);
-            }
-        }
-
-        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/")
@@ -120,8 +72,8 @@ public class HomeController {
                 SELECT COUNT(*)
                 FROM reservations
                 WHERE room_type = ?
-                AND check_in_date < ?
-                AND check_out_date > ?
+                  AND check_in_date < ?
+                  AND check_out_date > ?
                 """;
 
         Integer reservedCount = jdbcTemplate.queryForObject(
@@ -140,15 +92,18 @@ public class HomeController {
             return "redirect:/#booking";
         }
 
+        String reservationCode = "RES-" + System.currentTimeMillis();
+
         String insertSql = """
                 INSERT INTO reservations
-                (owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (reservation_code, owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try {
             jdbcTemplate.update(
                     insertSql,
+                    reservationCode,
                     reservationForm.getOwnerName(),
                     reservationForm.getPhone(),
                     reservationForm.getEmail(),
@@ -164,26 +119,83 @@ public class HomeController {
             return "redirect:/#booking";
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "予約内容を保存しました。ありがとうございます。");
-        return "redirect:/#booking";
+        redirectAttributes.addFlashAttribute("reservationCode", reservationCode);
+        redirectAttributes.addFlashAttribute("completedOwnerName", reservationForm.getOwnerName());
+        redirectAttributes.addFlashAttribute("completedEmail", reservationForm.getEmail());
+        redirectAttributes.addFlashAttribute("completedCatName", reservationForm.getCatName());
+        redirectAttributes.addFlashAttribute("completedCheckInDate", reservationForm.getCheckInDate());
+        redirectAttributes.addFlashAttribute("completedCheckOutDate", reservationForm.getCheckOutDate());
+        redirectAttributes.addFlashAttribute("completedRoomType", reservationForm.getRoomType());
+
+        return "redirect:/reservation/complete";
     }
-    
-    @GetMapping("/admin/reservations")
-    public String reservationList(Model model, HttpSession session) {
-        Boolean adminLoggedIn = (Boolean) session.getAttribute("adminLoggedIn");
-        if (adminLoggedIn == null || !adminLoggedIn) {
-            return "redirect:/admin/login";
+
+    @GetMapping("/reservation/complete")
+    public String reservationComplete() {
+        return "reservation-complete";
+    }
+
+    @GetMapping("/inquiry")
+    public String inquiryPage(
+            @RequestParam(required = false) String reservationCode,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String ownerName,
+            Model model
+    ) {
+        if (reservationCode != null) {
+            model.addAttribute("reservationCode", reservationCode);
+        }
+        if (email != null) {
+            model.addAttribute("email", email);
+        }
+        if (ownerName != null) {
+            model.addAttribute("ownerName", ownerName);
+        }
+        return "inquiry";
+    }
+
+    @PostMapping("/inquiry")
+    public String inquirySearch(
+            @RequestParam String reservationCode,
+            @RequestParam String email,
+            @RequestParam String ownerName,
+            Model model
+    ) {
+        String verifySql = """
+                SELECT COUNT(*)
+                FROM reservations
+                WHERE reservation_code = ?
+                  AND email = ?
+                  AND owner_name = ?
+                """;
+
+        Integer matched = jdbcTemplate.queryForObject(
+                verifySql,
+                Integer.class,
+                reservationCode,
+                email,
+                ownerName
+        );
+
+        if (matched == null || matched == 0) {
+            model.addAttribute("inquiryError", "入力した予約番号・メールアドレス・お名前に一致する予約が見つかりませんでした。");
+            model.addAttribute("reservationCode", reservationCode);
+            model.addAttribute("email", email);
+            model.addAttribute("ownerName", ownerName);
+            return "inquiry";
         }
 
         String sql = """
-                SELECT id, owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text, created_at
+                SELECT id, reservation_code, owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text, created_at
                 FROM reservations
-                ORDER BY id DESC
+                WHERE email = ?
+                ORDER BY created_at DESC
                 """;
 
         List<Reservation> reservations = jdbcTemplate.query(sql, (rs, rowNum) -> {
             Reservation reservation = new Reservation();
             reservation.setId(rs.getLong("id"));
+            reservation.setReservationCode(rs.getString("reservation_code"));
             reservation.setOwnerName(rs.getString("owner_name"));
             reservation.setPhone(rs.getString("phone"));
             reservation.setEmail(rs.getString("email"));
@@ -196,18 +208,24 @@ public class HomeController {
                 reservation.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
             }
             return reservation;
-        });
+        }, email);
 
+        model.addAttribute("searchedReservationCode", reservationCode);
+        model.addAttribute("searchedEmail", email);
+        model.addAttribute("searchedOwnerName", ownerName);
         model.addAttribute("reservations", reservations);
-        return "reservations";
+
+        return "inquiry-result";
     }
+
     @GetMapping("/admin/login")
     public String adminLogin(Model model) {
         if (!model.containsAttribute("adminLoginForm")) {
             model.addAttribute("adminLoginForm", new AdminLoginForm());
         }
         return "login";
-        }
+    }
+
     @PostMapping("/admin/login")
     public String doAdminLogin(
             @Valid AdminLoginForm adminLoginForm,
@@ -238,10 +256,94 @@ public class HomeController {
         session.setAttribute("adminLoggedIn", true);
         return "redirect:/admin/reservations";
     }
+
     @PostMapping("/admin/logout")
     public String adminLogout(HttpSession session) {
         session.invalidate();
         return "redirect:/admin/login";
     }
 
+    @GetMapping("/admin/reservations")
+    public String reservationList(Model model, HttpSession session) {
+        Boolean adminLoggedIn = (Boolean) session.getAttribute("adminLoggedIn");
+        if (adminLoggedIn == null || !adminLoggedIn) {
+            return "redirect:/admin/login";
+        }
+
+        String sql = """
+                SELECT id, reservation_code, owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text, created_at
+                FROM reservations
+                ORDER BY id DESC
+                """;
+
+        List<Reservation> reservations = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Reservation reservation = new Reservation();
+            reservation.setId(rs.getLong("id"));
+            reservation.setReservationCode(rs.getString("reservation_code"));
+            reservation.setOwnerName(rs.getString("owner_name"));
+            reservation.setPhone(rs.getString("phone"));
+            reservation.setEmail(rs.getString("email"));
+            reservation.setCatName(rs.getString("cat_name"));
+            reservation.setCheckInDate(rs.getDate("check_in_date").toLocalDate());
+            reservation.setCheckOutDate(rs.getDate("check_out_date").toLocalDate());
+            reservation.setRoomType(rs.getString("room_type"));
+            reservation.setNoteText(rs.getString("note_text"));
+            if (rs.getTimestamp("created_at") != null) {
+                reservation.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            }
+            return reservation;
+        });
+
+        model.addAttribute("reservations", reservations);
+        return "reservations";
+    }
+
+    @GetMapping("/api/available-rooms")
+    public ResponseEntity<?> getAvailableRooms(
+            @RequestParam String checkInDate,
+            @RequestParam String checkOutDate
+    ) {
+        if (checkInDate == null || checkInDate.isBlank()
+                || checkOutDate == null || checkOutDate.isBlank()) {
+            return ResponseEntity.badRequest().body("チェックイン日とチェックアウト日を入力してください。");
+        }
+
+        if (checkInDate.compareTo(checkOutDate) >= 0) {
+            return ResponseEntity.badRequest().body("チェックアウト日はチェックイン日より後の日付を選択してください。");
+        }
+
+        String sql = """
+                SELECT room_type, COUNT(*) AS reserved_count
+                FROM reservations
+                WHERE check_in_date < ?
+                  AND check_out_date > ?
+                GROUP BY room_type
+                """;
+
+        Map<String, Integer> reservedCountMap = new HashMap<>();
+        jdbcTemplate.query(sql, rs -> {
+            reservedCountMap.put(
+                    rs.getString("room_type"),
+                    rs.getInt("reserved_count")
+            );
+        }, checkOutDate, checkInDate);
+
+        ArrayList<Map<String, Object>> result = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : ROOM_CAPACITY.entrySet()) {
+            String roomType = entry.getKey();
+            int capacity = entry.getValue();
+            int reserved = reservedCountMap.getOrDefault(roomType, 0);
+            int remaining = capacity - reserved;
+
+            if (remaining > 0) {
+                Map<String, Object> room = new HashMap<>();
+                room.put("roomType", roomType);
+                room.put("remaining", remaining);
+                result.add(room);
+            }
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }

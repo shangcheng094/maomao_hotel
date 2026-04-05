@@ -29,44 +29,65 @@
 
 <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-amber-100 shadow-sm">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="#" class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-full bg-amber-400 flex items-center justify-center text-2xl shadow">
-                🐾
-            </div>
-            <div>
-                <p id="brandTitle" class="text-xl font-bold text-slate-900">猫ちゃんホテル</p>
-                <p class="text-xs text-slate-500">Cat Hotel & Cozy Stay</p>
-            </div>
-        </a>
+        <!-- 左侧：Logo + 桌面导航 -->
+        <div class="flex items-center min-w-0">
+            <a href="#" class="flex items-center gap-3 shrink-0">
+                <div class="w-11 h-11 rounded-full bg-amber-400 flex items-center justify-center text-2xl shadow">
+                    🐾
+                </div>
+                <div>
+                    <p id="brandTitle" class="text-xl font-bold text-slate-900">猫ちゃんホテル</p>
+                    <p class="text-xs text-slate-500">Cat Hotel & Cozy Stay</p>
+                </div>
+            </a>
 
-        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-            <a href="#about" class="hover:text-amber-600" id="navAbout">私たちについて</a>
-            <a href="#rooms" class="hover:text-amber-600" id="navRooms">お部屋紹介</a>
-            <a href="#gallery" class="hover:text-amber-600" id="navGallery">猫ちゃんギャラリー</a>
-            <a href="#services" class="hover:text-amber-600" id="navServices">サービス内容</a>
-            <a href="#booking" class="hover:text-amber-600" id="navBooking">ご予約</a>
-            <a href="#faq" class="hover:text-amber-600" id="navFaq">よくある質問</a>
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium ml-10">
+                <a href="#about" class="hover:text-amber-600 whitespace-nowrap" id="navAbout">私たちについて</a>
+                <a href="#rooms" class="hover:text-amber-600 whitespace-nowrap" id="navRooms">お部屋紹介</a>
+                <a href="#gallery" class="hover:text-amber-600 whitespace-nowrap" id="navGallery">猫ちゃんギャラリー</a>
+                <a href="#services" class="hover:text-amber-600 whitespace-nowrap" id="navServices">サービス内容</a>
+                <a href="#booking" class="hover:text-amber-600 whitespace-nowrap" id="navBooking">ご予約</a>
+                <a href="#faq" class="hover:text-amber-600 whitespace-nowrap" id="navFaq">よくある質問</a>
+            </nav>
+        </div>
+
+        <!-- 右侧：桌面按钮组 -->
+        <div class="hidden md:flex items-center gap-3 shrink-0 ml-6">
             <button id="langToggle"
                     type="button"
-                    class="rounded-full border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">
+                    class="rounded-full border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 whitespace-nowrap">
                 中文
             </button>
-        </nav>
 
-        <div class="md:hidden flex items-center gap-3">
-            <button id="langToggleMobile"
-                    type="button"
-                    class="rounded-full border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">
-                中文
-            </button>
-            <a href="#booking" id="headerBookingBtn" class="inline-flex items-center rounded-full bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-amber-600">
+            <a href="#booking" id="headerBookingBtnDesktop"
+               class="inline-flex items-center rounded-full bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-amber-600 whitespace-nowrap">
                 今すぐ予約
+            </a>
+
+            <a href="/inquiry" id="headerInquiryBtnDesktop"
+               class="inline-flex items-center rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-slate-800 whitespace-nowrap">
+                予約照会
             </a>
         </div>
 
-        <a href="#booking" id="headerBookingBtnDesktop" class="hidden md:inline-flex items-center rounded-full bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-amber-600">
-            今すぐ予約
-        </a>
+        <!-- 手机端按钮组 -->
+        <div class="md:hidden flex items-center gap-2 shrink-0">
+            <button id="langToggleMobile"
+                    type="button"
+                    class="rounded-full border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 whitespace-nowrap">
+                中文
+            </button>
+
+            <a href="#booking" id="headerBookingBtn"
+               class="inline-flex items-center rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-600 whitespace-nowrap">
+                今すぐ予約
+            </a>
+
+            <a href="/inquiry" id="headerInquiryBtn"
+               class="inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800 whitespace-nowrap">
+                予約照会
+            </a>
+        </div>
     </div>
 </header>
 
@@ -498,6 +519,8 @@
             navFaq: 'よくある質問',
             headerBookingBtn: '今すぐ予約',
             headerBookingBtnDesktop: '今すぐ予約',
+            headerInquiryBtn: '予約照会',
+            headerInquiryBtnDesktop: '予約照会',
 
             heroBadge: '24時間見守り・個室完備・毎日お世話',
             heroTitle: '大切な猫ちゃんに、<br>おうちのような安心できる休日を',
@@ -628,6 +651,8 @@
             navFaq: '常见问题',
             headerBookingBtn: '立即预约',
             headerBookingBtnDesktop: '立即预约',
+            headerInquiryBtn: '预约查询',
+            headerInquiryBtnDesktop: '预约查询',
 
             heroBadge: '24小时照护 · 独立猫房 · 每日陪玩',
             heroTitle: '给主子一个<br>像家一样安心的假期',
