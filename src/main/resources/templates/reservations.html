@@ -29,7 +29,11 @@
     </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-6 py-10">
+<main class="max-w-[2000px] mx-auto px-6 py-10">
+    <div th:if="${adminMessage}" class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
+        <p th:text="${adminMessage}"></p>
+    </div>
+
     <div class="bg-white rounded-3xl shadow-sm border border-amber-100 overflow-hidden">
         <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
             <h2 class="text-xl font-bold">予約データ</h2>
@@ -41,35 +45,78 @@
         </div>
 
         <div th:if="${!#lists.isEmpty(reservations)}" class="overflow-x-auto">
-            <table class="min-w-full text-sm">
+            <table class="min-w-[1400px] text-sm">
                 <thead class="bg-slate-50 text-slate-700">
                 <tr>
-                    <th class="px-4 py-3 text-left">ID</th>
-                    <th class="px-4 py-3 text-left">予約番号</th>
-                    <th class="px-4 py-3 text-left">飼い主さま</th>
-                    <th class="px-4 py-3 text-left">電話番号</th>
-                    <th class="px-4 py-3 text-left">メール</th>
-                    <th class="px-4 py-3 text-left">猫ちゃん</th>
-                    <th class="px-4 py-3 text-left">チェックイン</th>
-                    <th class="px-4 py-3 text-left">チェックアウト</th>
-                    <th class="px-4 py-3 text-left">お部屋</th>
-                    <th class="px-4 py-3 text-left">備考</th>
-                    <th class="px-4 py-3 text-left">登録日時</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">予約番号</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">飼い主さま</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">電話番号</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">メール</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">チェックイン</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">チェックアウト</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">お部屋</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">備考</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">猫ちゃん</th>
+                    <th class="px-4 py-3 text-left whitespace-nowrap">操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="reservation : ${reservations}" class="border-t border-slate-100 align-top">
-                    <td class="px-4 py-3" th:text="${reservation.id}">1</td>
-                    <td class="px-4 py-3" th:text="${reservation.reservationCode}">RES-123</td>
-                    <td class="px-4 py-3" th:text="${reservation.ownerName}">owner</td>
-                    <td class="px-4 py-3" th:text="${reservation.phone}">phone</td>
-                    <td class="px-4 py-3" th:text="${reservation.email}">email</td>
-                    <td class="px-4 py-3" th:text="${reservation.catName}">cat</td>
-                    <td class="px-4 py-3" th:text="${reservation.checkInDate}">2026-04-01</td>
-                    <td class="px-4 py-3" th:text="${reservation.checkOutDate}">2026-04-15</td>
-                    <td class="px-4 py-3" th:text="${reservation.roomType}">room</td>
-                    <td class="px-4 py-3 whitespace-pre-wrap break-words max-w-xs" th:text="${reservation.noteText}">note</td>
-                    <td class="px-4 py-3" th:text="${reservation.createdAt}">2026-03-29T11:00</td>
+
+                    <td class="px-4 py-4 min-w-[180px] font-semibold text-amber-700 break-all"
+                        th:text="${reservation.reservationCode}">
+                        RES-123
+                    </td>
+
+                    <td class="px-4 py-4 min-w-[140px] whitespace-nowrap"
+                        th:text="${reservation.ownerName}">
+                        owner
+                    </td>
+
+                    <td class="px-4 py-4 min-w-[130px] break-all"
+                        th:text="${reservation.phone}">
+                        phone
+                    </td>
+
+                    <td class="px-4 py-4 min-w-[220px] break-all"
+                        th:text="${reservation.email}">
+                        email
+                    </td>
+
+                    <td class="px-4 py-4 min-w-[120px] whitespace-nowrap"
+                        th:text="${reservation.checkInDate}">
+                        2026-04-20
+                    </td>
+
+                    <td class="px-4 py-4 min-w-[120px] whitespace-nowrap"
+                        th:text="${reservation.checkOutDate}">
+                        2026-04-25
+                    </td>
+
+                    <td class="px-4 py-4 min-w-[170px] break-words"
+                        th:text="${reservation.roomType}">
+                        room
+                    </td>
+
+                    <td class="px-4 py-4 min-w-[260px] max-w-[320px] whitespace-pre-wrap break-words text-slate-700"
+                        th:text="${reservation.noteText}">
+                        note
+                    </td>
+                    <td class="px-4 py-4 min-w-[100px] whitespace-nowrap"
+                        th:text="${reservation.catName}">
+                        cat
+                    </td>
+
+                    <td class="px-4 py-4 min-w-[100px]">
+                        <form th:action="@{/admin/reservations/delete}" method="post"
+                            onsubmit="return confirm('この予約を削除しますか？');">
+                            <input type="hidden" name="id" th:value="${reservation.id}">
+                            <button type="submit"
+                                    class="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 whitespace-nowrap">
+                                    削除
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 </tbody>
             </table>
