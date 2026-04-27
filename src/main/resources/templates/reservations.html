@@ -110,14 +110,24 @@
                     </td>
 
                     <td class="px-4 py-4 min-w-[100px]">
-                        <form th:action="@{/admin/reservations/delete}" method="post"
-                            onsubmit="return confirm('この予約を削除しますか？');">
-                            <input type="hidden" name="id" th:value="${reservation.id}">
-                            <button type="submit"
-                                    class="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 whitespace-nowrap">
-                                    削除
-                            </button>
-                        </form>
+                    <form 
+                    th:if="${reservation.checkInDate.isAfter(T(java.time.LocalDate).now())}"
+                        th:action="@{/admin/reservations/delete}"
+                        method="post"
+                        onsubmit="return confirm('この予約を削除しますか？');">
+                        <input type="hidden" name="id" th:value="${reservation.id}">
+                        <button type="submit"
+                                class="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 whitespace-nowrap">
+                            削除
+                        </button>
+                    </form>
+
+                    <button th:unless="${reservation.checkInDate.isAfter(T(java.time.LocalDate).now())}"
+                            type="button"
+                            disabled
+                            class="rounded-lg bg-slate-300 px-4 py-2 text-sm font-semibold text-white cursor-not-allowed whitespace-nowrap">
+                        削除不可
+                    </button>
                     </td>
                 </tr>
                 </tbody>

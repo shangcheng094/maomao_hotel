@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -357,6 +358,28 @@ public class HomeController {
             return "redirect:/admin/login";
         }
 
+        String checkSql = """
+                SELECT check_in_date
+                FROM reservations
+                WHERE id = ?
+                """;
+
+        LocalDate checkInDate = jdbcTemplate.queryForObject(
+                checkSql,
+                LocalDate.class,
+                id
+        );
+
+        if (checkInDate == null) {
+            redirectAttributes.addFlashAttribute("adminError", "対象の予約が見つかりませんでした。");
+            return "redirect:/admin/reservations";
+        }
+
+        if (!checkInDate.isAfter(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("adminError", "チェックイン日が今日以前の予約は削除できません。");
+            return "redirect:/admin/reservations";
+        }
+
         String sql = "DELETE FROM reservations WHERE id = ?";
         jdbcTemplate.update(sql, id);
 
@@ -372,22 +395,24 @@ public class HomeController {
             Model model
     ) {
         String verifySql = """
-                SELECT COUNT(*)
+                SELECT check_in_date
                 FROM reservations
-                WHERE reservation_code = ?
+                WHERE id = ?
+                AND reservation_code = ?
                 AND email = ?
                 AND owner_name = ?
                 """;
 
-        Integer matched = jdbcTemplate.queryForObject(
+        List<LocalDate> checkInDates = jdbcTemplate.query(
                 verifySql,
-                Integer.class,
+                (rs, rowNum) -> rs.getDate("check_in_date").toLocalDate(),
+                id,
                 reservationCode,
                 email,
                 ownerName
         );
 
-        if (matched == null || matched == 0) {
+        if (checkInDates.isEmpty()) {
             model.addAttribute("inquiryError", "入力情報が一致しないため、予約を削除できませんでした。");
             model.addAttribute("reservationCode", reservationCode);
             model.addAttribute("email", email);
@@ -395,13 +420,53 @@ public class HomeController {
             return "inquiry";
         }
 
+        LocalDate checkInDate = checkInDates.get(0);
+
+        if (!checkInDate.isAfter(LocalDate.now())) {
+            model.addAttribute("inquiryError", "チェックイン日が今日以前の予約は削除できません。");
+            model.addAttribute("searchedReservationCode", reservationCode);
+            model.addAttribute("searchedEmail", email);
+            model.addAttribute("searchedOwnerName", ownerName);
+
+            String sql = """
+                    SELECT id, reservation_code, owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text, created_at
+                    FROM reservations
+                    WHERE email = ?
+                    ORDER BY created_at DESC
+                    """;
+
+            List<Reservation> reservations = jdbcTemplate.query(sql, (rs, rowNum) -> {
+                Reservation reservation = new Reservation();
+                reservation.setId(rs.getLong("id"));
+                reservation.setReservationCode(rs.getString("reservation_code"));
+                reservation.setOwnerName(rs.getString("owner_name"));
+                reservation.setPhone(rs.getString("phone"));
+                reservation.setEmail(rs.getString("email"));
+                reservation.setCatName(rs.getString("cat_name"));
+                reservation.setCheckInDate(rs.getDate("check_in_date").toLocalDate());
+                reservation.setCheckOutDate(rs.getDate("check_out_date").toLocalDate());
+                reservation.setRoomType(rs.getString("room_type"));
+                reservation.setNoteText(rs.getString("note_text"));
+                if (rs.getTimestamp("created_at") != null) {
+                    reservation.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                }
+                return reservation;
+            }, email);
+
+            model.addAttribute("reservations", reservations);
+
+            return "inquiry-result";
+        }
+
         String deleteSql = """
                 DELETE FROM reservations
                 WHERE id = ?
                 AND email = ?
+                AND reservation_code = ?
+                AND owner_name = ?
                 """;
 
-        jdbcTemplate.update(deleteSql, id, email);
+        jdbcTemplate.update(deleteSql, id, email, reservationCode, ownerName);
 
         String sql = """
                 SELECT id, reservation_code, owner_name, phone, email, cat_name, check_in_date, check_out_date, room_type, note_text, created_at

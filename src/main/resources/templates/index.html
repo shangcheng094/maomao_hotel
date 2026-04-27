@@ -368,6 +368,7 @@
                     <div>
                         <label id="formLabelCheckInDate" class="block text-sm font-semibold text-slate-700 mb-2">チェックイン日</label>
                         <input id="inputCheckInDate" th:field="*{checkInDate}" type="date"
+                               th:attr="min=${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
                                class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                         <p th:if="${#fields.hasErrors('checkInDate')}" th:errors="*{checkInDate}" class="mt-2 text-sm text-red-600"></p>
                     </div>
@@ -375,6 +376,7 @@
                     <div>
                         <label id="formLabelCheckOutDate" class="block text-sm font-semibold text-slate-700 mb-2">チェックアウト日</label>
                         <input id="inputCheckOutDate" th:field="*{checkOutDate}" type="date"
+                               th:attr="min=${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"         
                                class="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400">
                         <p th:if="${#fields.hasErrors('checkOutDate')}" th:errors="*{checkOutDate}" class="mt-2 text-sm text-red-600"></p>
                     </div>
@@ -925,11 +927,63 @@
     const checkInInput = document.getElementById('inputCheckInDate');
     const checkOutInput = document.getElementById('inputCheckOutDate');
 
-    if (checkInInput) {
-        checkInInput.addEventListener('change', loadAvailableRooms);
+    function getTodayString() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
+
+    function initDateLimit() {
+        const today = getTodayString();
+
+        if (checkInInput) {
+            checkInInput.min = today;
+        }
+
+        if (checkOutInput) {
+            checkOutInput.min = today;
+        }
+    }
+
+    function validateDateLimit() {
+        const today = getTodayString();
+
+        if (checkInInput && checkInInput.value && checkInInput.value < today) {
+            alert(currentLang === 'ja'
+                ? 'チェックイン日は今日以降の日付を選択してください。'
+                : '入住日期请选择今天或今天以后的日期。');
+            checkInInput.value = '';
+        }
+
+        if (checkOutInput && checkOutInput.value && checkOutInput.value < today) {
+            alert(currentLang === 'ja'
+                ? 'チェックアウト日は今日以降の日付を選択してください。'
+                : '退房日期请选择今天或今天以后的日期。');
+            checkOutInput.value = '';
+        }
+
+        if (checkInInput && checkOutInput && checkInInput.value) {
+            checkOutInput.min = checkInInput.value;
+        }
+    }
+
+
+    initDateLimit();
+
+    if (checkInInput) {
+        checkInInput.addEventListener('change', function () {
+            validateDateLimit();
+            loadAvailableRooms();
+        });
+    }
+
     if (checkOutInput) {
-        checkOutInput.addEventListener('change', loadAvailableRooms);
+        checkOutInput.addEventListener('change', function () {
+            validateDateLimit();
+            loadAvailableRooms();
+        });
     }
 
     loadAvailableRooms();
