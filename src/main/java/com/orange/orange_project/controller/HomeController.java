@@ -21,10 +21,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.orange.orange_project.service.MailService;
+
 @Controller
 public class HomeController {
 
     private final JdbcTemplate jdbcTemplate;
+    private final MailService mailService;
+
+    public HomeController(JdbcTemplate jdbcTemplate, MailService mailService) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.mailService = mailService;
+}
 
     private static final Map<String, Integer> ROOM_CAPACITY = Map.of(
             "スタンダードルーム", 3,
@@ -32,9 +40,9 @@ public class HomeController {
             "ファミリー2匹ルーム", 3
     );
 
-    public HomeController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    // public HomeController(JdbcTemplate jdbcTemplate) {
+    //     this.jdbcTemplate = jdbcTemplate;
+    // }
 
     @GetMapping("/")
     public String home(Model model) {
@@ -118,6 +126,20 @@ public class HomeController {
             redirectAttributes.addFlashAttribute("saveError", "予約の保存に失敗しました。時間をおいて再度お試しください。");
             redirectAttributes.addFlashAttribute("reservationForm", reservationForm);
             return "redirect:/#booking";
+        }
+
+        try {
+            System.out.println("=== mail send start ===");
+
+            mailService.sendReservationCompleteMailToCustomer(reservationForm, reservationCode);
+            mailService.sendReservationNoticeMailToAdmin(reservationForm, reservationCode);
+
+            System.out.println("=== mail send end ===");
+        } catch (Exception e) {
+            System.out.println("=== mail send error ===");
+            e.printStackTrace();
+
+            redirectAttributes.addFlashAttribute("mailWarning", "予約は完了しましたが、確認メールの送信に失敗しました。");
         }
 
         redirectAttributes.addFlashAttribute("reservationCode", reservationCode);
